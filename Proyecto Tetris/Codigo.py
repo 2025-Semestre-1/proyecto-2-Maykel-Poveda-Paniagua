@@ -16,7 +16,7 @@ TAMANO_CELDA = 26
 # Ventana de principal
 principal = tk.Tk()
 principal.geometry("650x690+370+3")
-#principal.resizable(False,False)
+principal.resizable(False,False)
 principal.title("Tetris")
 principal.iconbitmap("Proyecto Tetris/ra.ico")
 
@@ -167,11 +167,14 @@ def dibujar_tablero(tablero):
             celda = tablero[y][x]
             if celda == "+":
                 color = "gray"
-                canvas_juego.create_rectangle(x * TAMANO_CELDA,
-                                              y * TAMANO_CELDA,
-                                              (x + 1) * TAMANO_CELDA,
-                                              (y + 1) * TAMANO_CELDA,
-                                              fill=color,outline="black")
+            else:
+                color = "black"
+                
+            canvas_juego.create_rectangle(x * TAMANO_CELDA, y * TAMANO_CELDA,
+                                          (x + 1) * TAMANO_CELDA,
+                                          (y + 1) * TAMANO_CELDA,
+                                          fill=color, outline="gray25")
+                
 tablero = crear_tablero()
 dibujar_tablero(tablero)
 principal.mainloop()

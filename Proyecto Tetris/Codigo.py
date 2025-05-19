@@ -1,16 +1,15 @@
 import tkinter as tk
 import random
 from PIL import Image, ImageTk
+import tkinter.messagebox as tm
 
 ###############################################################################################################
 # Configuracion y formato del juego
-BOTONES_FORMATO = ("Helvetica",10,"bold") 
+BOTONES_FORMATO = ("Lucida Console",12,"bold") 
 FONDO_DEL_TABLERO = "Dark slate gray"
 ANCHO = 14 
 ALTURA = 24
 TAMANO_CELDA = 26
-
-
 
 ###############################################################################################################
 # Ventana de principal
@@ -18,87 +17,125 @@ principal = tk.Tk()
 principal.geometry("650x690+370+3")
 principal.resizable(False,False)
 principal.title("Tetris")
-principal.iconbitmap("Proyecto Tetris/ra.ico")
+try:
+    principal.iconbitmap("Proyecto Tetris/ra.ico")
+except:
+    pass
 
+###############################################################################################################
 # Ventana de informacion
-ventana_informacion = tk.Toplevel(principal,bg=FONDO_DEL_TABLERO)
+ventana_informacion = tk.Toplevel(principal,bg="black")
 ventana_informacion.geometry("200x100+640+270")
-ventana_informacion.iconbitmap("Proyecto Tetris/ra.ico")
-ventana_informacion.resizable(False,False)
+try:
+    ventana_informacion.iconbitmap("Proyecto Tetris/ra.ico")
+except:
+    pass
 
-lbl_informacion = tk.Label(ventana_informacion,text="Escribe tu nombre",bg= FONDO_DEL_TABLERO,
+ventana_informacion.grab_set()   # Bloquea la principal hasta que esta se cierre
+ventana_informacion.focus_set()  # Le da el foco o sea tiene prioridad
+ventana_informacion.transient(principal)  # La vincula como hija visual de la principal
+
+##################################
+lbl_informacion = tk.Label(ventana_informacion,text="Escribe tu nombre",bg= "black",
                        fg= "white", font= ("Helvetica", 11, "bold")).pack()
-entrada_tex = tk.Entry(ventana_informacion,width=20).pack(pady=5)
+entrada_tex = tk.Entry(ventana_informacion,width=20)
+entrada_tex.pack(pady=5)
 
 boton_informacion = tk.Button(ventana_informacion, text="Confirmar", bg= "grey", font=("Helvetica",10,"bold"),fg="white",
-                        width=10, height=1, command=lambda: print("Confirmar")).pack(pady=1)
+                        width=10, height=1, command=lambda: obtener_tex())
+boton_informacion.pack(pady=1)
+boton_informacion.configure(cursor="hand2")
 
 ##############################################################################################################
-
 # Frames Contenedor
-contenedor_Principal = tk.LabelFrame(principal, bd=10, bg=FONDO_DEL_TABLERO)
-contenedor_Principal.configure(width=650, height=690)
+contenedor_Principal = tk.LabelFrame(principal, bd=10, bg="gray15")
+contenedor_Principal.configure(width=650, height=680)
 contenedor_Principal.pack()
 contenedor_Principal.pack_propagate(False)
 
+##############################################################################################################
 # Frame del Juego
-frame_Juego = tk.LabelFrame(contenedor_Principal, text="JUEGO", bd=10,
+frame_Juego = tk.LabelFrame(contenedor_Principal, bd=10,
                                       font=("Helvetica", 10, "bold"), fg="white", labelanchor="n")
-frame_Juego.configure(width=400, height=660, bg=FONDO_DEL_TABLERO)
+frame_Juego.configure(width=400, height=660, bg="black")
 frame_Juego.pack(side="left")
 frame_Juego.pack_propagate(False)
 
+##################################
 # Canvas donde esta el tablero
 canvas_juego = tk.Canvas(frame_Juego, width=ANCHO*TAMANO_CELDA, height=ALTURA*TAMANO_CELDA, bg="black")
-canvas_juego.pack()
+canvas_juego.pack(pady=6)
 
-
+##############################################################################################################
 # Frame de Opciones
 frame_Opciones = tk.Frame(contenedor_Principal)
 frame_Opciones.configure(width=250, height=660)
 frame_Opciones.pack(side="right")
 
+##################################
 # Frame de Opciones de Estadistica
-frame_Opc_Estadistica = tk.LabelFrame(frame_Opciones, text="ESTADISTICA", bd=10, bg=FONDO_DEL_TABLERO,
+frame_Opc_Estadistica = tk.LabelFrame(frame_Opciones, bd=10, bg="gray15",
                                       font=("Helvetica", 10, "bold"), fg="white", labelanchor="n")
 frame_Opc_Estadistica.configure(width=250, height=285)
 frame_Opc_Estadistica.pack(side="top")
-
-# Etiquetas de estadísticas dentro del frame de estadística
-lbl_puntaje = tk.Label(frame_Opc_Estadistica, text="Puntos: 0",bg= FONDO_DEL_TABLERO,
-                       fg= "white", font= ("Helvetica", 15, "bold"))
-lbl_puntaje.pack(pady=15)
-
-lbl_lineas = tk.Label(frame_Opc_Estadistica, text="Líneas: 0",bg= FONDO_DEL_TABLERO,
-                      fg= "white", font= ("Helvetica", 15, "bold"))
-lbl_lineas.pack(pady=15)
-
-lbl_piezas = tk.Label(frame_Opc_Estadistica, text="Piezas: 0",bg= FONDO_DEL_TABLERO,
-                      fg= "white", font= ("Helvetica", 15, "bold"))
-lbl_piezas.pack(pady=15)
 frame_Opc_Estadistica.pack_propagate(False)
 
+##################################
+# Etiquetas de estadísticas dentro del frame de estadística
+Ibl_usuario = tk.Label(frame_Opc_Estadistica,text="Jugador: ", bg="gray15",
+                        fg="white", font=("Helvetica", 15, "bold"))
+Ibl_usuario.pack(pady=15)
 
+frame_para_estadisticas = tk.LabelFrame(frame_Opc_Estadistica,bd=15,bg="black")
+frame_para_estadisticas.configure(width=190, height=160)
+frame_para_estadisticas.pack(side="top")
+frame_para_estadisticas.pack_propagate(False)
 
+####### Esta etiqueta sirve para alinear las otras etiquetas #######
+lbl_nada = tk.Label(frame_para_estadisticas,bg="black",
+                        fg= "black", font= ("Courier New", 1, "bold"))
+lbl_nada.pack(pady=0)
+#######------------------------------------------------------#######
+
+lbl_puntaje = tk.Label(frame_para_estadisticas, text="Puntos: 0",bg= "black",
+                        fg= "white", font= ("Courier New", 13, "bold"))
+lbl_puntaje.pack(pady=6)
+
+lbl_lineas = tk.Label(frame_para_estadisticas, text="Líneas: 0",bg= "black",
+                        fg= "white", font= ("Courier New", 13, "bold"))
+lbl_lineas.pack(pady=6)
+
+lbl_piezas = tk.Label(frame_para_estadisticas, text="Piezas: 0",bg= "black",
+                        fg= "white", font= ("Courier New", 13, "bold"))
+lbl_piezas.pack(pady=6)
+
+##############################################################################################################
 # Frame de Opciones de Juego
-frame_Opc_Juego = tk.LabelFrame(frame_Opciones, text="OPCIONES DE JUEGO", bd=10, bg=FONDO_DEL_TABLERO,
+frame_Opc_Juego = tk.LabelFrame(frame_Opciones, bd=10, bg="gray15",
                                 font=("Helvetica", 10, "bold"), fg="white", labelanchor="n")
 frame_Opc_Juego.configure(width=250, height=375)
 frame_Opc_Juego.pack(side="bottom")
+frame_Opc_Juego.pack_propagate(False)
+##################################
 
 # Botones en el panel de opcion de juego
-btn_iniciar = tk.Button(frame_Opc_Juego, text="Iniciar Juego", bg= "dark green", font=BOTONES_FORMATO,fg="white",
-                        width=20, height=2, command=lambda: print("Iniciar"))
-btn_iniciar.pack(pady=40)
+btn_iniciar = tk.Button(frame_Opc_Juego, text="Jugar", bg= "dark green", font=BOTONES_FORMATO, fg="white",
+                        width=11, height=2, relief="raised", activeforeground="white", activebackground="dark green",
+                        bd=10, command=lambda: print("Iniciar"))
+btn_iniciar.pack(pady=45)
+btn_iniciar.configure(cursor="hand2")
 
-btn_ranking = tk.Button(frame_Opc_Juego, text="Ver Ranking", bg= "blue4", font=BOTONES_FORMATO,fg="white",
-                        width=20, height=2, command=lambda: print("Ranking"))
-btn_ranking.pack(pady=1)
+btn_ranking = tk.Button(frame_Opc_Juego, text="Ranking", bg="blue4", font=BOTONES_FORMATO, fg="white",
+                        width=11, height=2, relief="raised", activeforeground="white", activebackground="blue4",
+                        bd=10, command=lambda: print("Ranking"))
+btn_ranking.pack(pady=0)
+btn_ranking.configure(cursor="hand2")
 
 btn_salir = tk.Button(frame_Opc_Juego, text="Salir",bg="red4", font=BOTONES_FORMATO,fg="white",
-                       width=20, height=2, command=principal.destroy)
-btn_salir.pack(pady=40)
-frame_Opc_Juego.pack_propagate(False)
+                       width=11, height=2,relief="raised",activeforeground="white",activebackground="red4",
+                       bd=10, command=principal.destroy)
+btn_salir.pack(pady=45)
+btn_salir.configure(cursor="hand2")
 
 ##############################################################################################################
 # Colores para los tetrominos
@@ -174,7 +211,39 @@ def dibujar_tablero(tablero):
                                           (x + 1) * TAMANO_CELDA,
                                           (y + 1) * TAMANO_CELDA,
                                           fill=color, outline="gray25")
-                
+            
+
+'''
+E: Nombre proporcionado por el usuario
+S: El nombre con sus respectivas estadisticas
+R: No debe tener numeros ni estar vacio
+'''
+def obtener_tex():
+    nombre = entrada_tex.get()
+   
+    if nombre.strip() == "":
+        tm.showerror("Texto Invalido", "El nombre no puede estar vacio.")
+        return
+        
+    bandera = False
+    for letra in nombre:
+        if letra in "1234567890":
+            bandera = True
+            break
+        
+    if bandera:
+        tm.showerror("Texto Invalido", "El nombre no debe contener numeros.")
+        return
+    elif len(nombre) > 11:
+        tm.showerror("Texto Invalido", "El nombre no debe pasar de 11 caracteres.")
+        return
+    
+    Ibl_usuario.configure(text=f"Jugador: {nombre}")
+    
+    # Cierra la ventana si el nombre es válido
+    ventana_informacion.destroy()
+          
 tablero = crear_tablero()
 dibujar_tablero(tablero)
+
 principal.mainloop()

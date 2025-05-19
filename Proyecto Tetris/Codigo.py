@@ -14,7 +14,7 @@ TAMANO_CELDA = 26
 ###############################################################################################################
 # Ventana de principal
 principal = tk.Tk()
-principal.geometry("650x690+370+3")
+principal.geometry("650x680+370+3")
 principal.resizable(False,False)
 principal.title("Tetris")
 try:
@@ -36,6 +36,7 @@ ventana_informacion.focus_set()  # Le da el foco o sea tiene prioridad
 ventana_informacion.transient(principal)  # La vincula como hija visual de la principal
 
 ##################################
+# Etiqueta, entrada de tex y boton de ventana info
 lbl_informacion = tk.Label(ventana_informacion,text="Escribe tu nombre",bg= "black",
                        fg= "white", font= ("Helvetica", 11, "bold")).pack()
 entrada_tex = tk.Entry(ventana_informacion,width=20)
@@ -48,7 +49,7 @@ boton_informacion.configure(cursor="hand2")
 
 ##############################################################################################################
 # Frames Contenedor
-contenedor_Principal = tk.LabelFrame(principal, bd=10, bg="gray15")
+contenedor_Principal = tk.LabelFrame(principal, bd=10, bg="gold")
 contenedor_Principal.configure(width=650, height=680)
 contenedor_Principal.pack()
 contenedor_Principal.pack_propagate(False)
@@ -57,14 +58,14 @@ contenedor_Principal.pack_propagate(False)
 # Frame del Juego
 frame_Juego = tk.LabelFrame(contenedor_Principal, bd=10,
                                       font=("Helvetica", 10, "bold"), fg="white", labelanchor="n")
-frame_Juego.configure(width=400, height=660, bg="black")
+frame_Juego.configure(width=400, height=660, bg="khaki3")
 frame_Juego.pack(side="left")
 frame_Juego.pack_propagate(False)
 
 ##################################
 # Canvas donde esta el tablero
-canvas_juego = tk.Canvas(frame_Juego, width=ANCHO*TAMANO_CELDA, height=ALTURA*TAMANO_CELDA, bg="black")
-canvas_juego.pack(pady=6)
+canvas_juego = tk.Canvas(frame_Juego, width=ANCHO*TAMANO_CELDA, height=ALTURA*TAMANO_CELDA,bd=20,bg="black")
+canvas_juego.pack(pady=7,padx=7)
 
 ##############################################################################################################
 # Frame de Opciones
@@ -74,67 +75,105 @@ frame_Opciones.pack(side="right")
 
 ##################################
 # Frame de Opciones de Estadistica
-frame_Opc_Estadistica = tk.LabelFrame(frame_Opciones, bd=10, bg="gray15",
+frame_Opc_Estadistica = tk.LabelFrame(frame_Opciones, bd=10, bg="khaki3",
                                       font=("Helvetica", 10, "bold"), fg="white", labelanchor="n")
 frame_Opc_Estadistica.configure(width=250, height=285)
 frame_Opc_Estadistica.pack(side="top")
 frame_Opc_Estadistica.pack_propagate(False)
 
-##################################
-# Etiquetas de estadísticas dentro del frame de estadística
-Ibl_usuario = tk.Label(frame_Opc_Estadistica,text="Jugador: ", bg="gray15",
-                        fg="white", font=("Helvetica", 15, "bold"))
-Ibl_usuario.pack(pady=15)
+# Imagen de fondo
+imagen_fondo_estadistica = Image.open("Proyecto Tetris/fondo1.png")  # Ruta imagen
+imagen_fondo_estadistica = imagen_fondo_estadistica.resize((240, 315), Image.Resampling.LANCZOS)
+canvas_Estadistica_es = ImageTk.PhotoImage(imagen_fondo_estadistica)
 
-frame_para_estadisticas = tk.LabelFrame(frame_Opc_Estadistica,bd=15,bg="black")
+# Canvas que alberga la imagen
+canvas_Estadistica = tk.Canvas(frame_Opc_Estadistica, width=240, height=355, highlightthickness=0)
+canvas_Estadistica.pack_propagate(False)
+canvas_Estadistica.pack()
+
+# Crea la imagen en el canvas
+canvas_Estadistica.create_image(0, 0, anchor="nw", image=canvas_Estadistica_es)
+canvas_Estadistica.image = canvas_Estadistica_es  # Para que no se elimine la imagen
+
+##################################
+# simula pantalla para nombre
+frame_pantalla = tk.LabelFrame(canvas_Estadistica,bd=8,bg="gold")
+frame_pantalla.pack(pady=12)
+
+# Etiquetas de estadísticas dentro del frame de estadística
+Ibl_usuario = tk.Label(frame_pantalla,text="Jugador: ", bg="black",
+                        fg="white",bd=7, font=("Helvetica", 15, "bold"))
+Ibl_usuario.pack(pady=1)
+
+# Simula pantalla estadistic
+frame_para_estadisticas = tk.LabelFrame(canvas_Estadistica,bd=15,bg="gold")
 frame_para_estadisticas.configure(width=190, height=160)
 frame_para_estadisticas.pack(side="top")
 frame_para_estadisticas.pack_propagate(False)
 
+# simula pantalla sin borde dentro de pantalla estaditic
+frame_dentro_pantalla = tk.Frame(frame_para_estadisticas,bg="black")
+frame_dentro_pantalla.configure(width=190, height=160)
+frame_dentro_pantalla.pack_propagate(False)
+frame_dentro_pantalla.pack()
+
 ####### Esta etiqueta sirve para alinear las otras etiquetas #######
-lbl_nada = tk.Label(frame_para_estadisticas,bg="black",
+lbl_nada = tk.Label(frame_dentro_pantalla,bg="black",
                         fg= "black", font= ("Courier New", 1, "bold"))
 lbl_nada.pack(pady=0)
 #######------------------------------------------------------#######
 
-lbl_puntaje = tk.Label(frame_para_estadisticas, text="Puntos: 0",bg= "black",
+lbl_puntaje = tk.Label(frame_dentro_pantalla, text="Puntos: 0",bg= "black",
                         fg= "white", font= ("Courier New", 13, "bold"))
 lbl_puntaje.pack(pady=6)
 
-lbl_lineas = tk.Label(frame_para_estadisticas, text="Líneas: 0",bg= "black",
+lbl_lineas = tk.Label(frame_dentro_pantalla, text="Lineas: 0",bg= "black",
                         fg= "white", font= ("Courier New", 13, "bold"))
 lbl_lineas.pack(pady=6)
 
-lbl_piezas = tk.Label(frame_para_estadisticas, text="Piezas: 0",bg= "black",
+lbl_piezas = tk.Label(frame_dentro_pantalla, text="Piezas: 0",bg= "black",
                         fg= "white", font= ("Courier New", 13, "bold"))
 lbl_piezas.pack(pady=6)
 
 ##############################################################################################################
 # Frame de Opciones de Juego
-frame_Opc_Juego = tk.LabelFrame(frame_Opciones, bd=10, bg="gray15",
+frame_Opc_Juego = tk.LabelFrame(frame_Opciones, bd=10, bg="khaki3",
                                 font=("Helvetica", 10, "bold"), fg="white", labelanchor="n")
 frame_Opc_Juego.configure(width=250, height=375)
 frame_Opc_Juego.pack(side="bottom")
 frame_Opc_Juego.pack_propagate(False)
+
+# Canvas que alberga la imagen
+canvas_opciones = tk.Canvas(frame_Opc_Juego, width=230, height=355, highlightthickness=0)
+canvas_opciones.pack()
+
 ##################################
+# Cargar imagen de fondo
+imagen_fondo_juego = Image.open("Proyecto Tetris/fondo1.png")  # Cambia al nombre real
+imagen_fondo_juego = imagen_fondo_juego.resize((230, 357), Image.Resampling.LANCZOS)
+imagen_tk = ImageTk.PhotoImage(imagen_fondo_juego)
+
+# Crea la imagen en el canvas
+canvas_opciones.create_image(0, 0, anchor="nw", image=imagen_tk)
+canvas_opciones.image = imagen_tk  # Para que no se elimine la imagen
 
 # Botones en el panel de opcion de juego
-btn_iniciar = tk.Button(frame_Opc_Juego, text="Jugar", bg= "dark green", font=BOTONES_FORMATO, fg="white",
-                        width=11, height=2, relief="raised", activeforeground="white", activebackground="dark green",
+btn_iniciar = tk.Button(canvas_opciones, text="Jugar", bg= "dark green", font=BOTONES_FORMATO, fg="white",
+                        width=9, height=2, relief="raised", activeforeground="white", activebackground="dark green",
                         bd=10, command=lambda: print("Iniciar"))
-btn_iniciar.pack(pady=45)
+canvas_opciones.create_window(105, 85, window=btn_iniciar)  # Posición centrada
 btn_iniciar.configure(cursor="hand2")
 
-btn_ranking = tk.Button(frame_Opc_Juego, text="Ranking", bg="blue4", font=BOTONES_FORMATO, fg="white",
-                        width=11, height=2, relief="raised", activeforeground="white", activebackground="blue4",
+btn_ranking = tk.Button(canvas_opciones, text="Ranking", bg="blue4", font=BOTONES_FORMATO, fg="white",
+                        width=9, height=2, relief="raised", activeforeground="white", activebackground="blue4",
                         bd=10, command=lambda: print("Ranking"))
-btn_ranking.pack(pady=0)
+canvas_opciones.create_window(105, 176, window=btn_ranking)
 btn_ranking.configure(cursor="hand2")
 
-btn_salir = tk.Button(frame_Opc_Juego, text="Salir",bg="red4", font=BOTONES_FORMATO,fg="white",
-                       width=11, height=2,relief="raised",activeforeground="white",activebackground="red4",
+btn_salir = tk.Button(canvas_opciones, text="Salir",bg="red4", font=BOTONES_FORMATO,fg="white",
+                       width=9, height=2,relief="raised",activeforeground="white",activebackground="red4",
                        bd=10, command=principal.destroy)
-btn_salir.pack(pady=45)
+canvas_opciones.create_window(105, 270, window=btn_salir)
 btn_salir.configure(cursor="hand2")
 
 ##############################################################################################################

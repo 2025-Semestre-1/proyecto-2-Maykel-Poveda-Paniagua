@@ -26,6 +26,7 @@ except:
 # Ventana de informacion
 ventana_informacion = tk.Toplevel(principal,bg="black")
 ventana_informacion.geometry("200x100+640+270")
+ventana_informacion.pack_propagate(False)
 try:
     ventana_informacion.iconbitmap("Proyecto Tetris/ra.ico")
 except:
@@ -34,6 +35,17 @@ except:
 ventana_informacion.grab_set()   # Bloquea la principal hasta que esta se cierre
 ventana_informacion.focus_set()  # Le da el foco o sea tiene prioridad
 ventana_informacion.transient(principal)  # La vincula como hija visual de la principal
+
+'''
+E:
+S: Destruir ventana principal
+'''
+def bloquear_cierre():
+    principal.destroy()
+
+
+# Bloqueamos la para no salirnos X
+ventana_informacion.protocol("WM_DELETE_WINDOW", bloquear_cierre)
 
 ##################################
 # Etiqueta, entrada de tex y boton de ventana info
@@ -160,7 +172,7 @@ canvas_opciones.image = imagen_tk  # Para que no se elimine la imagen
 # Botones en el panel de opcion de juego
 btn_iniciar = tk.Button(canvas_opciones, text="Jugar", bg= "dark green", font=BOTONES_FORMATO, fg="white",
                         width=9, height=2, relief="raised", activeforeground="white", activebackground="dark green",
-                        bd=10, command=lambda: print("Iniciar"))
+                        bd=10, command=lambda: iniciar())
 canvas_opciones.create_window(105, 85, window=btn_iniciar)  # Posición centrada
 btn_iniciar.configure(cursor="hand2")
 
@@ -216,43 +228,6 @@ FORMAS_TETRIS = [
 ]
 ###############################################################################################################
 '''
-E:
-S: Tablero con "0" y los bordes con "+" 
-'''
-def crear_tablero():
-    tablero = []
-    for i in range(ALTURA):
-        fila = []
-        for j in range(ANCHO):
-            if i == 0 or i == ALTURA-1 or j == 0 or j == ANCHO-1:
-                fila += ["+"]
-            else:
-                fila += [0]
-        tablero += [fila]
-    return tablero
-
-
-'''
-E: Tablero creado
-S: Se dibuja el tablero en el canvas de juego 
-'''
-def dibujar_tablero(tablero):
-    canvas_juego.delete("all")  # se limpia el canvas antes de iniar a dibujar el nuevo tablero
-    for y in range(ALTURA):
-        for x in range(ANCHO):
-            celda = tablero[y][x]
-            if celda == "+":
-                color = "gray"
-            else:
-                color = "black"
-                
-            canvas_juego.create_rectangle(x * TAMANO_CELDA, y * TAMANO_CELDA,
-                                          (x + 1) * TAMANO_CELDA,
-                                          (y + 1) * TAMANO_CELDA,
-                                          fill=color, outline="gray25")
-            
-
-'''
 E: Nombre proporcionado por el usuario
 S: El nombre con sus respectivas estadisticas
 R: No debe tener numeros ni estar vacio
@@ -266,14 +241,15 @@ def obtener_tex():
         
     bandera = False
     for letra in nombre:
-        if letra in "1234567890":
+        if letra in "1234567890 ":
             bandera = True
             break
         
     if bandera:
         tm.showerror("Texto Invalido", "El nombre no debe contener numeros.")
         return
-    elif len(nombre) > 11:
+    
+    elif len(nombre) > 10:
         tm.showerror("Texto Invalido", "El nombre no debe pasar de 11 caracteres.")
         return
     
@@ -281,8 +257,92 @@ def obtener_tex():
     
     # Cierra la ventana si el nombre es válido
     ventana_informacion.destroy()
-          
-tablero = crear_tablero()
-dibujar_tablero(tablero)
+ 
+def iniciar():
+        
+    '''
+    E:
+    S: Tablero con "0" y los bordes con "+" 
+    '''
+    def crear_tablero():
+        tablero = []
+        for i in range(ALTURA):
+            fila = []
+            for j in range(ANCHO):
+                if i == 0 or i == ALTURA-1 or j == 0 or j == ANCHO-1:
+                    fila += ["+"]
+                else:
+                    fila += [0]
+            tablero += [fila]
+        return tablero
 
+
+    '''
+    E: Tablero creado
+    S: Se dibuja el tablero en el canvas de juego 
+    '''
+    def dibujar_tablero(tablero):
+        canvas_juego.delete("all")  # se limpia el canvas antes de iniar a dibujar el nuevo tablero
+        for y in range(ALTURA):
+            for x in range(ANCHO):
+                celda = tablero[y][x]
+                if celda == "+":
+                    color = "gray"
+                else:
+                    color = "black"
+                    
+                canvas_juego.create_rectangle(x * TAMANO_CELDA, y * TAMANO_CELDA,
+                                            (x + 1) * TAMANO_CELDA,
+                                            (y + 1) * TAMANO_CELDA,
+                                            fill=color, outline="gray")   
+                
+    '''
+    E:
+    S: Diccionario con su respectiva forma, color y cordenadas
+    '''   
+    def crear_pieza():
+        indice = random.randint(0, 7)
+        forma = FORMAS_TETRIS[indice]
+        color = COLORES_TETRIS[indice]
+        if indice == 1:
+            x = 5
+            y = 1
+        else:
+            x = 6
+            y = 1
+        return {"forma": forma, "color": color, "x": x, "y": y}  # Diccionario
+
+    def dibujar_pieza(pieza):
+        forma = pieza["forma"]
+        color = pieza["color"]
+        x_posicion = pieza["x"]
+        y_posicion = pieza["y"]
+
+        y_local = 0   # Lleva el control de las filas
+        for fila in forma:  # Recorre la forma
+            x_local = 0   # Lleva el control de las columnas
+            for bloque in fila:  # Recorre los bloques
+                if bloque == 1:
+                    x_canvas = (x_local + x_posicion) * TAMANO_CELDA
+                    y_canvas = (y_local + y_posicion) * TAMANO_CELDA
+                    canvas_juego.create_rectangle(
+                        x_canvas, y_canvas,
+                        x_canvas + TAMANO_CELDA, y_canvas + TAMANO_CELDA,
+                        fill=color, outline="black", width=2
+                    )
+                x_local += 1
+            y_local += 1
+
+    def actualizar_canvas(tablero, pieza):
+        canvas_juego.delete("all")
+        dibujar_tablero(tablero)
+        dibujar_pieza(pieza)
+
+    # En el bucle principal
+    tablero = crear_tablero()
+    pieza_actual = crear_pieza()
+
+    actualizar_canvas(tablero, pieza_actual)
+
+    
 principal.mainloop()

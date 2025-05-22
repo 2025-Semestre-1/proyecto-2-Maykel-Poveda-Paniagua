@@ -26,16 +26,16 @@ except:
 # Ventana de informacion
 ventana_informacion = tk.Toplevel(principal,bg="black")
 ventana_informacion.geometry("200x100+640+270")
-ventana_informacion.pack_propagate(False)
+ventana_informacion.resizable(False,False)
 try:
     ventana_informacion.iconbitmap("Proyecto Tetris/ra.ico")
 except:
     pass
 
 ventana_informacion.grab_set()   # Bloquea la principal hasta que esta se cierre
-ventana_informacion.focus_set()  # Le da el foco o sea tiene prioridad
+ventana_informacion.lift() # Se levanta sobre las demas dando prioridad 
+ventana_informacion.focus_force() # Le damos todo el foco
 ventana_informacion.transient(principal)  # La vincula como hija visual de la principal
-
 '''
 E:
 S: Destruir ventana principal
@@ -53,6 +53,8 @@ lbl_informacion = tk.Label(ventana_informacion,text="Escribe tu nombre",bg= "bla
                        fg= "white", font= ("Helvetica", 11, "bold")).pack()
 entrada_tex = tk.Entry(ventana_informacion,width=20)
 entrada_tex.pack(pady=5)
+
+ventana_informacion.after(150, lambda: entrada_tex.focus_set())  # Le da el foco o sea tiene prioridad el entry
 
 boton_informacion = tk.Button(ventana_informacion, text="Confirmar", bg= "grey", font=("Helvetica",10,"bold"),fg="white",
                         width=10, height=1, command=lambda: obtener_tex())
@@ -178,7 +180,8 @@ btn_iniciar.configure(cursor="hand2")
 
 btn_ranking = tk.Button(canvas_opciones, text="Ranking", bg="blue4", font=BOTONES_FORMATO, fg="white",
                         width=9, height=2, relief="raised", activeforeground="white", activebackground="blue4",
-                        bd=10, command=lambda: print("Ranking"))
+                        bd=10, command=lambda: ventana_ranking())
+
 canvas_opciones.create_window(105, 176, window=btn_ranking)
 btn_ranking.configure(cursor="hand2")
 
@@ -227,6 +230,26 @@ FORMAS_TETRIS = [
      [0,1,0]]
 ]
 ###############################################################################################################
+'''
+E: 
+S: Genera la ventana al tocar el boton de ranking
+R: 
+'''
+def ventana_ranking():
+    # Ventana que muestra el Ranking
+    Ven_ranking = tk.Toplevel(principal,bg="black") 
+    Ven_ranking.title("Ranking Top 10")
+    Ven_ranking.geometry("400x350+540+270")
+    Ven_ranking.pack_propagate(False)
+    Ven_ranking.grab_set()
+    Ven_ranking.focus_set()
+    Ven_ranking.transient(principal)
+    
+    try:
+        Ven_ranking.iconbitmap("Proyecto Tetris/ra.ico")
+    except:
+        pass
+
 '''
 E: Nombre proporcionado por el usuario
 S: El nombre con sus respectivas estadisticas

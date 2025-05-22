@@ -42,8 +42,8 @@ S: Destruir ventana principal
 '''
 def bloquear_cierre():
     principal.destroy()
-
-
+    
+    
 # Bloqueamos la para no salirnos X
 ventana_informacion.protocol("WM_DELETE_WINDOW", bloquear_cierre)
 
@@ -54,7 +54,7 @@ lbl_informacion = tk.Label(ventana_informacion,text="Escribe tu nombre",bg= "bla
 entrada_tex = tk.Entry(ventana_informacion,width=20)
 entrada_tex.pack(pady=5)
 
-ventana_informacion.after(150, lambda: entrada_tex.focus_set())  # Le da el foco o sea tiene prioridad el entry
+ventana_informacion.after(150, lambda: entrada_tex.focus_set())  # Le da el foco o sea tiene prioridad el entry despues de 150 milisegundos
 
 boton_informacion = tk.Button(ventana_informacion, text="Confirmar", bg= "grey", font=("Helvetica",10,"bold"),fg="white",
                         width=10, height=1, command=lambda: obtener_tex())
@@ -78,7 +78,7 @@ frame_Juego.pack_propagate(False)
 
 ##################################
 # Canvas donde esta el tablero
-canvas_juego = tk.Canvas(frame_Juego, width=ANCHO*TAMANO_CELDA, height=ALTURA*TAMANO_CELDA,bd=20,bg="black")
+canvas_juego = tk.Canvas(frame_Juego, width=ANCHO*TAMANO_CELDA, height=ALTURA*TAMANO_CELDA,bd=20,bg="black",highlightthickness=0)
 canvas_juego.pack(pady=7,padx=7)
 
 ##############################################################################################################
@@ -106,7 +106,7 @@ canvas_Estadistica.pack_propagate(False)
 canvas_Estadistica.pack()
 
 # Crea la imagen en el canvas
-canvas_Estadistica.create_image(0, 0, anchor="nw", image=canvas_Estadistica_es)
+canvas_Estadistica.create_image(0, 0, anchor="nw", image=canvas_Estadistica_es) # Esquina superior izquierda
 canvas_Estadistica.image = canvas_Estadistica_es  # Para que no se elimine la imagen
 
 ##################################
@@ -175,20 +175,21 @@ canvas_opciones.image = imagen_tk  # Para que no se elimine la imagen
 btn_iniciar = tk.Button(canvas_opciones, text="Jugar", bg= "dark green", font=BOTONES_FORMATO, fg="white",
                         width=9, height=2, relief="raised", activeforeground="white", activebackground="dark green",
                         bd=10, command=lambda: iniciar())
-canvas_opciones.create_window(105, 85, window=btn_iniciar)  # Posición centrada
+canvas_opciones.create_window(105, 85, window=btn_iniciar)  # Posición centrada arriba del canvas y la imagen
 btn_iniciar.configure(cursor="hand2")
 
 btn_ranking = tk.Button(canvas_opciones, text="Ranking", bg="blue4", font=BOTONES_FORMATO, fg="white",
                         width=9, height=2, relief="raised", activeforeground="white", activebackground="blue4",
                         bd=10, command=lambda: ventana_ranking())
 
-canvas_opciones.create_window(105, 176, window=btn_ranking)
+canvas_opciones.create_window(105, 176, window=btn_ranking) # Posición centrada arriba del canvas y la imagen
 btn_ranking.configure(cursor="hand2")
 
 btn_salir = tk.Button(canvas_opciones, text="Salir",bg="red4", font=BOTONES_FORMATO,fg="white",
                        width=9, height=2,relief="raised",activeforeground="white",activebackground="red4",
                        bd=10, command=principal.destroy)
-canvas_opciones.create_window(105, 270, window=btn_salir)
+
+canvas_opciones.create_window(105, 270, window=btn_salir) # Posición centrada arriba del canvas y la imagen
 btn_salir.configure(cursor="hand2")
 
 ##############################################################################################################
@@ -236,11 +237,12 @@ S: Genera la ventana al tocar el boton de ranking
 R: 
 '''
 def ventana_ranking():
+
     # Ventana que muestra el Ranking
-    Ven_ranking = tk.Toplevel(principal,bg="black") 
-    Ven_ranking.title("Ranking Top 10")
-    Ven_ranking.geometry("400x350+540+270")
-    Ven_ranking.pack_propagate(False)
+    Ven_ranking = tk.Toplevel(principal,bg="khaki3") 
+    Ven_ranking.title("Ranking")
+    Ven_ranking.geometry("500x500+440+100")
+    Ven_ranking.resizable(False,False)
     Ven_ranking.grab_set()
     Ven_ranking.focus_set()
     Ven_ranking.transient(principal)
@@ -249,6 +251,51 @@ def ventana_ranking():
         Ven_ranking.iconbitmap("Proyecto Tetris/ra.ico")
     except:
         pass
+    
+    # Imagen 
+    imagen_fondo_Ranking = Image.open("Proyecto Tetris/fondo1.png")  # Ruta imagen
+    imagen_fondo_Ranking = imagen_fondo_Ranking.resize((550, 500), Image.Resampling.LANCZOS)
+    canvas_rank = ImageTk.PhotoImage(imagen_fondo_Ranking)
+    
+    frame_para_ran = tk.LabelFrame(Ven_ranking,bd=15,bg="khaki3")
+    frame_para_ran.configure(width=550, height=550)
+    frame_para_ran.pack()
+    frame_para_ran.pack_propagate(False)
+    
+    canvas_ran = tk.Canvas(frame_para_ran, width=550, height=550,highlightthickness=0)
+    canvas_ran.pack_propagate(False)
+    canvas_ran.pack()
+    
+    canvas_ran.create_image(0, 0, anchor="nw", image=canvas_rank) # Esquina superior izquierda
+    canvas_ran.image = canvas_rank  # Para que no se elimine la imagen
+    
+    # Frame de texto
+    frame_ra_panta = tk.LabelFrame(canvas_ran,bg="gold",bd=10)
+    frame_ra_panta.pack(fill="both",padx=20, pady=10)
+    
+    fram_pan = tk.Frame(frame_ra_panta,bg="black",width=430,height=40)
+    fram_pan.pack_propagate(False)
+    fram_pan.pack()
+    
+    # Etiqueta de frame de texto
+    tk.Label(fram_pan, text="TOP 10 PUNTAJES", font=("Courier New", 16, "bold"), 
+             bg="black", fg="white").pack(pady=10)
+    
+    # Frame de todas las etiquetas
+    frame_Ranking = tk.LabelFrame(canvas_ran, bg="gold",bd=10,width=425,height=440)
+    frame_Ranking.pack_propagate(False)
+    frame_Ranking.pack(fill="both", padx=20, pady=5)
+    
+    fram_p = tk.Frame(frame_Ranking, bg="black")
+    fram_p.pack(fill="both", expand=True)
+    
+    # Etiquetas
+    tk.Label(fram_p, text="Posicion", font=("Courier New", 12, "bold"), 
+             bg="black", fg="white", width=13).grid(row=0, column=0)
+    tk.Label(fram_p, text="Jugador", font=("Courier New", 12, "bold"), 
+             bg="black", fg="white", width=15).grid(row=0, column=1)
+    tk.Label(fram_p, text="Puntos", font=("Courier New", 12, "bold"), 
+             bg="black", fg="white", width=10).grid(row=0, column=2)
 
 '''
 E: Nombre proporcionado por el usuario
@@ -280,25 +327,26 @@ def obtener_tex():
     
     # Cierra la ventana si el nombre es válido
     ventana_informacion.destroy()
+    return nombre
+ 
+     
+'''
+E:
+S: Tablero con "0" y los bordes con "+" 
+'''
+def crear_tablero():
+    tablero = []
+    for i in range(ALTURA):
+        fila = []
+        for j in range(ANCHO):
+            if i == 0 or i == ALTURA-1 or j == 0 or j == ANCHO-1:
+                fila += ["+"]
+            else:
+                fila += [0]
+        tablero += [fila]
+    return tablero
  
 def iniciar():
-        
-    '''
-    E:
-    S: Tablero con "0" y los bordes con "+" 
-    '''
-    def crear_tablero():
-        tablero = []
-        for i in range(ALTURA):
-            fila = []
-            for j in range(ANCHO):
-                if i == 0 or i == ALTURA-1 or j == 0 or j == ANCHO-1:
-                    fila += ["+"]
-                else:
-                    fila += [0]
-            tablero += [fila]
-        return tablero
-
 
     '''
     E: Tablero creado
@@ -358,8 +406,8 @@ def iniciar():
 
     def actualizar_canvas(tablero, pieza):
         canvas_juego.delete("all")
-        dibujar_tablero(tablero)
-        dibujar_pieza(pieza)
+        canvas_juego.after(400,lambda: dibujar_tablero(tablero)) # Se dibuja el tablero despues de 400 milisegundos
+        canvas_juego.after(500,lambda: dibujar_pieza(pieza)) # Se dibuja la pieza despues de 500 milisegundos
 
     # En el bucle principal
     tablero = crear_tablero()

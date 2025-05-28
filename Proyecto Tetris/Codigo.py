@@ -1,7 +1,9 @@
 import tkinter as tk
 import random
+import re
 from PIL import Image, ImageTk
 import tkinter.messagebox as tm
+import time
 
 ###############################################################################################################
 # Configuracion y formato del juego
@@ -309,17 +311,11 @@ def obtener_tex():
         tm.showerror("Texto Invalido", "El nombre no puede estar vacio.")
         return
         
-    bandera = False
-    for letra in nombre:
-        if letra in "1234567890 ":
-            bandera = True
-            break
-        
-    if bandera:
-        tm.showerror("Texto Invalido", "El nombre no debe contener numeros.")
+    if not re.match(r"^[a-zA-Z\s]+$", nombre):
+        tm.showerror("Texto Invalido", "El nombre debe de contener solo letras.")
         return
     
-    elif len(nombre) > 10:
+    elif len(nombre) > 11:
         tm.showerror("Texto Invalido", "El nombre no debe pasar de 11 caracteres.")
         return
     
@@ -327,6 +323,8 @@ def obtener_tex():
     
     # Cierra la ventana si el nombre es válido
     ventana_informacion.destroy()
+    time.sleep(0.5)
+    tm.showinfo("Información","Si deseas agregar obstaculos has click en las casillas")
     return nombre
      
 juego_en_proceso = False     
@@ -354,6 +352,7 @@ def dibujar_tablero(tablero):
     canvas_juego.delete("all")  # se limpia el canvas antes de iniar a dibujar el nuevo tablero
     for y in range(ALTURA):
         for x in range(ANCHO):
+            
             celda = tablero[y][x]
             if celda == "+":
                 color = "gray"
@@ -381,14 +380,16 @@ def extraerMatriz():
         for linea in lineas:
             fila = linea.strip().split()
             matriz += [fila]
-                
-        matriz_entera = []
-        matriz_entera += matriz
-        return matriz_entera
+
+        return matriz
     
 tablero = extraerMatriz()
 dibujar_tablero(tablero)
 
+'''
+E: Evento "click"
+S: Dibuja obstaculos en el canvas
+'''
 def click_canva(evento):
     if juego_en_proceso:
         return
@@ -467,11 +468,11 @@ def iniciar():
 
     def actualizar_canvas(tablero, pieza):
         canvas_juego.delete("all")
-        canvas_juego.after(20,lambda: dibujar_tablero(tablero)) # Se dibuja el tablero despues de 400 milisegundos
+        canvas_juego.after(0,lambda: dibujar_tablero(tablero)) # Se dibuja el tablero despues de 0 milisegundos
         canvas_juego.after(500,lambda: dibujar_pieza(pieza)) # Se dibuja la pieza despues de 500 milisegundos
 
     # En el bucle principal
-    tablero = extraerMatriz()
+    tablero = extraerMatriz() # Se llama para actualizar el tablero
     pieza_actual = crear_pieza()
 
     actualizar_canvas(tablero, pieza_actual)

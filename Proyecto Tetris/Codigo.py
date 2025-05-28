@@ -327,8 +327,8 @@ def obtener_tex():
     tm.showinfo("Información","Si deseas agregar obstaculos has click en las casillas")
     return nombre
      
-juego_en_proceso = False     
-     
+juego_en_proceso = False    
+
 '''
 E:
 S: Tablero con "0" y los bordes con "+" 

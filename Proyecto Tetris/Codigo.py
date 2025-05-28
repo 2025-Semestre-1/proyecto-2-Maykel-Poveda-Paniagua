@@ -328,7 +328,8 @@ def obtener_tex():
     # Cierra la ventana si el nombre es válido
     ventana_informacion.destroy()
     return nombre
- 
+     
+juego_en_proceso = False     
      
 '''
 E:
@@ -344,48 +345,89 @@ def crear_matriz():
                 else:
                     fila += "0" + " "
             archivo.write(fila.strip()+ "\n")
-    
-archivo = crear_matriz()
 
-
-def iniciar():
-    '''
-    E: 
-    S: Extrae la matriz del archivo txt 
-    '''
-    def extraerMatriz():
-        with open("Proyecto Tetris/Matriz.txt", "r") as archi:
-            contenido = archi.read()
-            lineas = contenido.splitlines()
-            matriz = []
+'''
+E: Tablero creado
+S: Se dibuja el tablero en el canvas de juego 
+'''
+def dibujar_tablero(tablero):
+    canvas_juego.delete("all")  # se limpia el canvas antes de iniar a dibujar el nuevo tablero
+    for y in range(ALTURA):
+        for x in range(ANCHO):
+            celda = tablero[y][x]
+            if celda == "+":
+                color = "gray"
+                
+            elif celda == "#":
+                color = "gray"
+                
+            else:
+                color = "black"
+                    
+            canvas_juego.create_rectangle(x * TAMANO_CELDA, y * TAMANO_CELDA,
+                                            (x + 1) * TAMANO_CELDA,
+                                            (y + 1) * TAMANO_CELDA,
+                                            fill=color, outline="gray")   
+'''
+E: 
+S: Extrae la matriz del archivo txt 
+'''
+def extraerMatriz():
+    with open("Proyecto Tetris/Matriz.txt", "r") as archi:
+        contenido = archi.read()
+        lineas = contenido.splitlines()
+        matriz = []
             
+        for linea in lineas:
+            fila = linea.strip().split()
+            matriz += [fila]
+                
+        matriz_entera = []
+        matriz_entera += matriz
+        return matriz_entera
+    
+tablero = extraerMatriz()
+dibujar_tablero(tablero)
+
+def click_canva(evento):
+    if juego_en_proceso:
+        return
+    
+    x = evento.x // TAMANO_CELDA
+    y = evento.y // TAMANO_CELDA
+    
+    if 0 <= x < ANCHO and 0 <= y < ALTURA:
+        with open("Proyecto Tetris/Matriz.txt", "r") as archivo:
+            lineas = archivo.readlines()
+            
+            matriz = []
             for linea in lineas:
                 fila = linea.strip().split()
                 matriz += [fila]
                 
-            matriz_entera = []
-            matriz_entera += matriz
-            return matriz_entera
-
-    '''
-    E: Tablero creado
-    S: Se dibuja el tablero en el canvas de juego 
-    '''
-    def dibujar_tablero(tablero):
-        canvas_juego.delete("all")  # se limpia el canvas antes de iniar a dibujar el nuevo tablero
-        for y in range(ALTURA):
-            for x in range(ANCHO):
-                celda = tablero[y][x]
-                if celda == "+":
-                    color = "gray"
-                else:
-                    color = "black"
+            if matriz[y][x] != "+":
+                if matriz[y][x] == "0":
+                    matriz[y][x] = "#"
                     
-                canvas_juego.create_rectangle(x * TAMANO_CELDA, y * TAMANO_CELDA,
-                                            (x + 1) * TAMANO_CELDA,
-                                            (y + 1) * TAMANO_CELDA,
-                                            fill=color, outline="gray")   
-                
+                else:
+                    matriz[y][x] = "0"
+            
+            with open("Proyecto Tetris/Matriz.txt", "w") as archivo:
+                for fila in matriz:
+                    fila_txt = ""
+                    for cuadro in fila:
+                        fila_txt += cuadro + " "
+                    archivo.write(fila_txt.strip() + "\n")
+                        
+            dibujar_tablero(matriz)        
+              
+# Instruccion para poder agregar obtaculos           
+canvas_juego.bind("<Button-1>", click_canva)
+
+def iniciar():
+    global juego_en_proceso
+    juego_en_proceso = True
+
     '''
     E:
     S: Diccionario con su respectiva forma, color y cordenadas
@@ -425,7 +467,7 @@ def iniciar():
 
     def actualizar_canvas(tablero, pieza):
         canvas_juego.delete("all")
-        canvas_juego.after(400,lambda: dibujar_tablero(tablero)) # Se dibuja el tablero despues de 400 milisegundos
+        canvas_juego.after(20,lambda: dibujar_tablero(tablero)) # Se dibuja el tablero despues de 400 milisegundos
         canvas_juego.after(500,lambda: dibujar_pieza(pieza)) # Se dibuja la pieza despues de 500 milisegundos
 
     # En el bucle principal

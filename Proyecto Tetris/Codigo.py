@@ -334,19 +334,38 @@ def obtener_tex():
 E:
 S: Tablero con "0" y los bordes con "+" 
 '''
-def crear_tablero():
-    tablero = []
-    for i in range(ALTURA):
-        fila = []
-        for j in range(ANCHO):
-            if i == 0 or i == ALTURA-1 or j == 0 or j == ANCHO-1:
-                fila += ["+"]
-            else:
-                fila += [0]
-        tablero += [fila]
-    return tablero
- 
+def crear_matriz():
+    with open("Proyecto Tetris/Matriz.txt","w") as archivo:
+        for i in range(ALTURA):
+            fila = ""
+            for j in range(ANCHO):
+                if i == 0 or i == ALTURA-1 or j == 0 or j == ANCHO-1:
+                    fila += "+" + " "
+                else:
+                    fila += "0" + " "
+            archivo.write(fila.strip()+ "\n")
+    
+archivo = crear_matriz()
+
+
 def iniciar():
+    '''
+    E: 
+    S: Extrae la matriz del archivo txt 
+    '''
+    def extraerMatriz():
+        with open("Proyecto Tetris/Matriz.txt", "r") as archi:
+            contenido = archi.read()
+            lineas = contenido.splitlines()
+            matriz = []
+            
+            for linea in lineas:
+                fila = linea.strip().split()
+                matriz += [fila]
+                
+            matriz_entera = []
+            matriz_entera += matriz
+            return matriz_entera
 
     '''
     E: Tablero creado
@@ -410,7 +429,7 @@ def iniciar():
         canvas_juego.after(500,lambda: dibujar_pieza(pieza)) # Se dibuja la pieza despues de 500 milisegundos
 
     # En el bucle principal
-    tablero = crear_tablero()
+    tablero = extraerMatriz()
     pieza_actual = crear_pieza()
 
     actualizar_canvas(tablero, pieza_actual)

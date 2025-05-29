@@ -327,7 +327,7 @@ def obtener_tex():
     tm.showinfo("Información","Si deseas agregar obstaculos has click en las casillas")
     return nombre
      
-juego_en_proceso = False    
+juego_en_proceso = False
 
 '''
 E:
@@ -382,9 +382,6 @@ def extraerMatriz():
             matriz += [fila]
 
         return matriz
-    
-tablero = extraerMatriz()
-dibujar_tablero(tablero)
 
 '''
 E: Evento "click"
@@ -421,61 +418,113 @@ def click_canva(evento):
                     archivo.write(fila_txt.strip() + "\n")
                         
             dibujar_tablero(matriz)        
-              
+
+
+###############################################
+#         Apartado Global
+###############################################  
+
 # Instruccion para poder agregar obtaculos           
 canvas_juego.bind("<Button-1>", click_canva)
+# Bandera para bloquea click
+juego_en_proceso = False
+# Variable que contiene la extraccion de matriz
+tablero = extraerMatriz()
+# Se dibuja el tablero para que el usuario se guie para poner obtaculos
+dibujar_tablero(tablero)
+
+###############################################
+
+'''
+E:
+S: Diccionario con su respectiva forma, color y cordenadas
+'''   
+def crear_pieza():
+    indice = random.randint(0, 7)
+    forma = FORMAS_TETRIS[indice]
+    color = COLORES_TETRIS[indice]
+    if indice == 1:
+        x = 5
+        y = 1
+    else:
+        x = 6
+        y = 1
+        
+    return {"forma": forma, "color": color, "x": x, "y": y}  # Diccionario
+
+def dibujar_pieza(pieza):
+    forma = pieza["forma"]
+    color = pieza["color"]
+    x_posicion = pieza["x"]
+    y_posicion = pieza["y"]
+
+    y_local = 0   # Lleva el control de las filas
+    for fila in forma:  # Recorre la forma
+        x_local = 0   # Lleva el control de las columnas
+        for bloque in fila:  # Recorre los bloques
+            if bloque == 1:
+                x_canvas = (x_local + x_posicion) * TAMANO_CELDA
+                y_canvas = (y_local + y_posicion) * TAMANO_CELDA
+                
+                canvas_juego.create_rectangle(
+                                x_canvas, y_canvas,
+                                x_canvas + TAMANO_CELDA, y_canvas + TAMANO_CELDA,
+                                fill=color, outline="black", width=2
+                )
+            x_local += 1
+        y_local += 1
+        
+def mover(pieza, dx, dy, tablero):
+    pass # Pentiente
+def rotar_pieza(pieza, tablero):
+    pass # Pentiente
+def colision(pieza,tablero):
+    pass # Pentiente
+def fijar_pieza(pieza,tablero):
+    pass # Pentiente
+def guardar_tablero(tablero):
+    pass # Pentiente
+def eliminar_lineas(tablero):
+    pass # Pentiente
+def verificar_juego_perdido(pieza, tablero):
+    pass # Pentiente
+
+def actualizar_canvas(tablero, pieza):
+    canvas_juego.delete("all")
+    canvas_juego.after(0,lambda: dibujar_tablero(tablero)) # Se dibuja el tablero despues de 0 milisegundos
+    canvas_juego.after(500,lambda: dibujar_pieza(pieza)) # Se dibuja la pieza despues de 500 milisegundos
+
+
+#############################################
+#                  Juego 
+#############################################
+'''
+E: 
+S: Bucle del juego
+'''
 
 def iniciar():
     global juego_en_proceso
     juego_en_proceso = True
 
-    '''
-    E:
-    S: Diccionario con su respectiva forma, color y cordenadas
-    '''   
-    def crear_pieza():
-        indice = random.randint(0, 7)
-        forma = FORMAS_TETRIS[indice]
-        color = COLORES_TETRIS[indice]
-        if indice == 1:
-            x = 5
-            y = 1
-        else:
-            x = 6
-            y = 1
-        return {"forma": forma, "color": color, "x": x, "y": y}  # Diccionario
-
-    def dibujar_pieza(pieza):
-        forma = pieza["forma"]
-        color = pieza["color"]
-        x_posicion = pieza["x"]
-        y_posicion = pieza["y"]
-
-        y_local = 0   # Lleva el control de las filas
-        for fila in forma:  # Recorre la forma
-            x_local = 0   # Lleva el control de las columnas
-            for bloque in fila:  # Recorre los bloques
-                if bloque == 1:
-                    x_canvas = (x_local + x_posicion) * TAMANO_CELDA
-                    y_canvas = (y_local + y_posicion) * TAMANO_CELDA
-                    canvas_juego.create_rectangle(
-                        x_canvas, y_canvas,
-                        x_canvas + TAMANO_CELDA, y_canvas + TAMANO_CELDA,
-                        fill=color, outline="black", width=2
-                    )
-                x_local += 1
-            y_local += 1
-
-    def actualizar_canvas(tablero, pieza):
-        canvas_juego.delete("all")
-        canvas_juego.after(0,lambda: dibujar_tablero(tablero)) # Se dibuja el tablero despues de 0 milisegundos
-        canvas_juego.after(500,lambda: dibujar_pieza(pieza)) # Se dibuja la pieza despues de 500 milisegundos
-
     # En el bucle principal
-    tablero = extraerMatriz() # Se llama para actualizar el tablero
+    tablero = extraerMatriz()
     pieza_actual = crear_pieza()
-
     actualizar_canvas(tablero, pieza_actual)
+
+    def derecha(e):
+        pass # Pentiente
+    def izquierda(e):
+        pass # Pentiente
+    def rotar(e):
+        pass # Pentiente
+    def abajo(e):
+        pass # Pentiente
+    
+    canvas_juego.bind("<Left>", izquierda) 
+    canvas_juego.bind("<Right>", derecha) 
+    canvas_juego.bind("<Up>", rotar) 
+    canvas_juego.bind("<Down>", abajo)
 
     
 principal.mainloop()

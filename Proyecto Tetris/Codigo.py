@@ -298,6 +298,10 @@ def ventana_ranking():
              bg="black", fg="white", width=15).grid(row=0, column=1)
     tk.Label(fram_p, text="Puntos", font=("Courier New", 12, "bold"), 
              bg="black", fg="white", width=10).grid(row=0, column=2)
+    
+#---------------------------------------------------------------------------------#
+#                             Funciones del Juego                                 #
+#---------------------------------------------------------------------------------#
 
 '''
 E: Nombre proporcionado por el usuario
@@ -453,8 +457,8 @@ def crear_pieza():
     return {"forma": forma, "color": color, "x": x, "y": y}  # Diccionario
 
 '''
-E:
-S:
+E: Diccionario con los parametros de cada figura
+S: Pieza dibujada en el canvas
 '''   
 def dibujar_pieza(pieza):
     forma = pieza["forma"]
@@ -479,8 +483,8 @@ def dibujar_pieza(pieza):
         y_local += 1
 
 '''
-E:
-S:
+E: Tablero extraido del archivo txt y pieza con los parametros del diccionario
+S: Actualiza el tablero para mostrar los cambios dados
 '''          
 def actualizar_canvas(tablero, pieza):
     canvas_juego.delete("all")
@@ -488,8 +492,8 @@ def actualizar_canvas(tablero, pieza):
     dibujar_pieza(pieza) # Se dibuja la pieza despues de 500 milisegundos
 
 '''
-E:
-S: 
+E: Tablero extraido del archivo txt y pieza con los parametros del diccionario
+S: Valor booleano que verifica si hay o no colision
 '''   
 def colision(pieza,tablero):
     forma = pieza["forma"]
@@ -536,7 +540,7 @@ def mover(pieza, dx, dy, tablero):
         actualizar_canvas(tablero, pieza)
         
 '''
-E: Pieza que el diccionario y la extracion del la matriz en txt
+E: Pieza del diccionario y la extracion del la matriz en txt
 S: Pieza rotada 
 '''          
 def rotar_pieza(pieza, tablero):
@@ -569,30 +573,30 @@ def rotar_pieza(pieza, tablero):
         actualizar_canvas(tablero, pieza)
 
 '''
-E: Pieza que el diccionario y la extracion del la matriz en txt
-S: Pieza rotada 
-''' 
+E: Pieza del diccionario y la extracion del la matriz en txt
+S: Pieza fijada
+'''  
 def fijar_pieza(pieza,tablero):
     pass # Pentiente
 
 '''
-E: Pieza que el diccionario y la extracion del la matriz en txt
-S: Pieza rotada 
+E: La extracion del la matriz en txt
+S: 
 ''' 
 def guardar_tablero(tablero):
     pass # Pentiente
 
 '''
-E: Pieza que el diccionario y la extracion del la matriz en txt
-S: Pieza rotada 
+E: La extracion del la matriz en txt
+S: Elimina lineas con un mismo valor
 ''' 
 def eliminar_lineas(tablero):
     pass # Pentiente
 
 '''
-E: Pieza que el diccionario y la extracion del la matriz en txt
-S: Pieza rotada 
-''' 
+E: Pieza del diccionario y la extracion del la matriz en txt
+S: Verificacion de que no haya columnas llenas del mismo valor
+'''  
 def verificar_juego_perdido(pieza, tablero):
     pass # Pentiente
 
@@ -608,9 +612,8 @@ def iniciar():
     global juego_en_proceso, pieza_actual, tablero
     juego_en_proceso = True
 
-    # En el bucle principal
-    tablero = extraerMatriz()
-    pieza_actual = crear_pieza()
+    tablero = extraerMatriz() # Variable que contiene la matriz actualizada
+    pieza_actual = crear_pieza() # Variable que tiene la pieza base
     actualizar_canvas(tablero, pieza_actual)
     
     '''
@@ -641,11 +644,11 @@ def iniciar():
     def abajo(e):
         mover(pieza_actual,0,1,tablero)
         
-    canvas_juego.focus_set()
+    canvas_juego.focus_set() # Se le da el foco al canva
     
     canvas_juego.bind("<Left>", izquierda) 
     canvas_juego.bind("<Right>", derecha) 
-    canvas_juego.bind("<Up>", rotar) 
+    canvas_juego.bind("<Up>", rotar)
     canvas_juego.bind("<Down>", abajo)
 
     

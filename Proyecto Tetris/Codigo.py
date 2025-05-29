@@ -452,6 +452,10 @@ def crear_pieza():
         
     return {"forma": forma, "color": color, "x": x, "y": y}  # Diccionario
 
+'''
+E:
+S:
+'''   
 def dibujar_pieza(pieza):
     forma = pieza["forma"]
     color = pieza["color"]
@@ -473,26 +477,124 @@ def dibujar_pieza(pieza):
                 )
             x_local += 1
         y_local += 1
-        
-def mover(pieza, dx, dy, tablero):
-    pass # Pentiente
-def rotar_pieza(pieza, tablero):
-    pass # Pentiente
-def colision(pieza,tablero):
-    pass # Pentiente
-def fijar_pieza(pieza,tablero):
-    pass # Pentiente
-def guardar_tablero(tablero):
-    pass # Pentiente
-def eliminar_lineas(tablero):
-    pass # Pentiente
-def verificar_juego_perdido(pieza, tablero):
-    pass # Pentiente
 
+'''
+E:
+S:
+'''          
 def actualizar_canvas(tablero, pieza):
     canvas_juego.delete("all")
-    canvas_juego.after(0,lambda: dibujar_tablero(tablero)) # Se dibuja el tablero despues de 0 milisegundos
-    canvas_juego.after(500,lambda: dibujar_pieza(pieza)) # Se dibuja la pieza despues de 500 milisegundos
+    dibujar_tablero(tablero) # Se dibuja el tablero despues de 0 milisegundos
+    dibujar_pieza(pieza) # Se dibuja la pieza despues de 500 milisegundos
+
+'''
+E:
+S: 
+'''   
+def colision(pieza,tablero):
+    forma = pieza["forma"]
+    x = pieza["x"]
+    y = pieza["y"]
+
+    y_local = 0   # Lleva el control de las filas
+    for fila in forma:  # Recorre la forma
+        x_local = 0   # Lleva el control de las columnas
+        for bloque in fila:  # Recorre los bloques
+            if bloque == 1:
+                tablero_x = x_local + x
+                tablero_y = y_local + y
+                
+                if 0 <= tablero_x < ANCHO and 0 <= tablero_y < ALTURA:
+                    if tablero[tablero_y][tablero_x] != "0":
+                        return True               
+                else:
+                    return True
+                
+            x_local += 1
+        y_local += 1
+            
+    return False
+
+'''
+E: Pieza que el diccionario, la extracion del la matriz en txt, y las cordenadas a cambiar
+S: Pieza con nuevos parametros de ubicacion
+'''   
+def mover(pieza, dx, dy, tablero):
+    nuevo_y = pieza["y"] + dy
+    nuevo_x = pieza["x"] + dx
+    
+    nueva_pieza = {
+        "forma": pieza["forma"],
+        "color": pieza["color"],
+        "y": nuevo_y,
+        "x": nuevo_x
+    }
+    
+    if not colision(nueva_pieza,tablero):
+        pieza["x"] = nuevo_x
+        pieza["y"] = nuevo_y
+        actualizar_canvas(tablero, pieza)
+        
+'''
+E: Pieza que el diccionario y la extracion del la matriz en txt
+S: Pieza rotada 
+'''          
+def rotar_pieza(pieza, tablero):
+    if pieza["color"] == "yellow":
+        return
+    if pieza["color"] == "red":
+        return
+    
+    pieza_nueva = pieza["forma"]
+    
+    filas = len(pieza_nueva)
+    columnas = len(pieza_nueva[0])
+    
+    matriz = []
+    for x in range(columnas):
+        fila_rotada = []
+        for y in range(filas -1, -1, -1):
+            fila_rotada += [pieza_nueva[y][x]]
+        matriz += [fila_rotada]
+        
+    Nueva_rotar = {
+        "forma": matriz,
+        "color": pieza["color"],
+        "x": pieza["x"],
+        "y": pieza["y"]
+    }
+    
+    if not colision(Nueva_rotar,tablero):
+        pieza["forma"] = matriz
+        actualizar_canvas(tablero, pieza)
+
+'''
+E: Pieza que el diccionario y la extracion del la matriz en txt
+S: Pieza rotada 
+''' 
+def fijar_pieza(pieza,tablero):
+    pass # Pentiente
+
+'''
+E: Pieza que el diccionario y la extracion del la matriz en txt
+S: Pieza rotada 
+''' 
+def guardar_tablero(tablero):
+    pass # Pentiente
+
+'''
+E: Pieza que el diccionario y la extracion del la matriz en txt
+S: Pieza rotada 
+''' 
+def eliminar_lineas(tablero):
+    pass # Pentiente
+
+'''
+E: Pieza que el diccionario y la extracion del la matriz en txt
+S: Pieza rotada 
+''' 
+def verificar_juego_perdido(pieza, tablero):
+    pass # Pentiente
 
 
 #############################################
@@ -502,24 +604,44 @@ def actualizar_canvas(tablero, pieza):
 E: 
 S: Bucle del juego
 '''
-
 def iniciar():
-    global juego_en_proceso
+    global juego_en_proceso, pieza_actual, tablero
     juego_en_proceso = True
 
     # En el bucle principal
     tablero = extraerMatriz()
     pieza_actual = crear_pieza()
     actualizar_canvas(tablero, pieza_actual)
-
+    
+    '''
+    E: Evento
+    S: Pieza movida a la derecha
+    ''' 
     def derecha(e):
-        pass # Pentiente
+        mover(pieza_actual,1,0,tablero)
+        
+    '''
+    E: Evento
+    S: Pieza movida a la izquierda
+    '''         
     def izquierda(e):
-        pass # Pentiente
+        mover(pieza_actual,-1,0,tablero)
+
+    '''
+    E: Evento
+    S: Pieza rotada
+    '''        
     def rotar(e):
-        pass # Pentiente
+        rotar_pieza(pieza_actual, tablero)
+    
+    '''
+    E: Evento
+    S: Pieza movida hacia abajo
+    ''' 
     def abajo(e):
-        pass # Pentiente
+        mover(pieza_actual,0,1,tablero)
+        
+    canvas_juego.focus_set()
     
     canvas_juego.bind("<Left>", izquierda) 
     canvas_juego.bind("<Right>", derecha) 

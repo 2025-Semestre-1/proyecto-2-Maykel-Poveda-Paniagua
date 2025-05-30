@@ -349,6 +349,23 @@ def crear_matriz():
             archivo.write(fila.strip()+ "\n")
 
 '''
+E:
+S: Diccionario con su respectiva forma, color y cordenadas
+'''   
+def crear_pieza():
+    indice = random.randint(0, 7)
+    forma = FORMAS_TETRIS[indice]
+    color = COLORES_TETRIS[indice]
+    if indice == 1:
+        x = 5
+        y = 1
+    else:
+        x = 6
+        y = 1
+        
+    return {"forma": forma, "color": color, "x": x, "y": y}  # Diccionario
+
+'''
 E: Tablero creado
 S: Se dibuja el tablero en el canvas de juego 
 '''
@@ -364,9 +381,11 @@ def dibujar_tablero(tablero):
             elif celda == "#":
                 color = "gray"
                 
-            else:
+            elif celda == "0":
                 color = "black"
-                    
+                
+            else:
+                color = celda                    
             canvas_juego.create_rectangle(x * TAMANO_CELDA, y * TAMANO_CELDA,
                                             (x + 1) * TAMANO_CELDA,
                                             (y + 1) * TAMANO_CELDA,
@@ -438,23 +457,6 @@ tablero = extraerMatriz()
 dibujar_tablero(tablero)
 
 ###############################################
-
-'''
-E:
-S: Diccionario con su respectiva forma, color y cordenadas
-'''   
-def crear_pieza():
-    indice = random.randint(0, 7)
-    forma = FORMAS_TETRIS[indice]
-    color = COLORES_TETRIS[indice]
-    if indice == 1:
-        x = 5
-        y = 1
-    else:
-        x = 6
-        y = 1
-        
-    return {"forma": forma, "color": color, "x": x, "y": y}  # Diccionario
 
 '''
 E: Diccionario con los parametros de cada figura
@@ -539,6 +541,9 @@ def mover(pieza, dx, dy, tablero):
         pieza["x"] = nuevo_x
         pieza["y"] = nuevo_y
         actualizar_canvas(tablero, pieza)
+        return True
+    else:
+        return False
         
 '''
 E: Pieza del diccionario y la extracion del la matriz en txt
@@ -579,29 +584,52 @@ E: Pieza del diccionario y la extracion del la matriz en txt
 S: Pieza fijada
 '''  
 def fijar_pieza(pieza,tablero):
-    pass # Pentiente
-
-'''
-E: La extracion del la matriz en txt
-S: 
-''' 
-def guardar_tablero(tablero):
-    pass # Pentiente
-
+    forma = pieza["forma"]
+    x_local = pieza["x"]
+    y_local = pieza["y"]
+    
+    fila = len(forma)
+    columna = len(forma[0])
+    
+    for y in range(fila):
+        for x in range(columna):
+            if forma[y][x] == 1:
+                tablero_x = x_local + x
+                tablero_y = y_local + y
+                
+                if 0 < tablero_y < ALTURA-1 and 0 < tablero_x < ANCHO-1:
+                    tablero[tablero_y][tablero_x] = pieza["color"]
+                    
 '''
 E: La extracion del la matriz en txt
 S: Elimina lineas con un mismo valor
 ''' 
 def eliminar_lineas(tablero):
-    pass # Pentiente
+    lineas_eliminadas = 0
 
-'''
-E: Pieza del diccionario y la extracion del la matriz en txt
-S: Verificacion de que no haya columnas llenas del mismo valor
-'''  
-def verificar_juego_perdido(pieza, tablero):
-    pass # Pentiente
+    for y in range(ALTURA-2, 0, -1):
+        linea_completa = True
 
+        for x in range(1, ANCHO-1): 
+            if tablero[y][x] == "0":
+                linea_completa = False
+                break 
+        
+        if linea_completa:
+            for x in range(1, ANCHO-1):
+                tablero[y][x] = "0"
+
+            for y_mover in range(y, 1, -1):
+                for x_mover in range(1, ANCHO-1):
+                    tablero[y_mover][x_mover] = tablero[y_mover-1][x_mover]
+
+            for x in range(1, ANCHO-1):
+                tablero[1][x] = "0"
+            
+            lineas_eliminadas += 1
+            y += 1
+    
+    return lineas_eliminadas
 
 #############################################
 #                  Juego 
@@ -646,12 +674,35 @@ def iniciar():
     def abajo(e):
         mover(pieza_actual,0,1,tablero)
         
+    '''
+    E: 
+    S: 
+    '''         
+    def bucle_del_juego():
+        global pieza_actual, juego_en_proceso
+        
+        if not mover(pieza_actual, 0, 1, tablero):
+            fijar_pieza(pieza_actual, tablero)
+            lineas = eliminar_lineas(tablero)
+            pieza_actual = crear_pieza()
+            
+            if colision(pieza_actual, tablero):
+                tm.showinfo("Game Over","Has perdido, inténtalo de nuevo")
+                juego_en_proceso = False
+                
+                return  # Detiene el bucle
+            
+        canvas_juego.after(1000, bucle_del_juego)
+        
     canvas_juego.focus_set() # Se le da el foco al canva
     
     canvas_juego.bind("<Left>", izquierda) 
     canvas_juego.bind("<Right>", derecha) 
     canvas_juego.bind("<Up>", rotar)
     canvas_juego.bind("<Down>", abajo)
+    
+    bucle_del_juego()
+    
 
     
 principal.mainloop()

@@ -527,6 +527,7 @@ def mover(pieza, dx, dy, tablero):
     nuevo_y = pieza["y"] + dy
     nuevo_x = pieza["x"] + dx
     
+    # Diccionario que simula el movimiento
     nueva_pieza = {
         "forma": pieza["forma"],
         "color": pieza["color"],
@@ -561,6 +562,7 @@ def rotar_pieza(pieza, tablero):
             fila_rotada += [pieza_nueva[y][x]]
         matriz += [fila_rotada]
         
+    # Diccionario que simula el movimiento
     Nueva_rotar = {
         "forma": matriz,
         "color": pieza["color"],

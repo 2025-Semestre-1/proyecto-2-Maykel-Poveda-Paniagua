@@ -299,6 +299,41 @@ def ventana_ranking():
     tk.Label(fram_p, text="Puntos", font=("Courier New", 12, "bold"), 
              bg="black", fg="white", width=10).grid(row=0, column=2)
     
+    try:
+        with open("Proyecto Tetris/Ranking.txt","r") as archi:
+        
+            lineas = archi.readlines()
+        
+        datos = []
+        for linea in lineas:
+            partes = linea.strip().split(",")
+            
+            if len(partes) == 2:
+                nom = partes[0]
+                puntos = int(partes[1])
+                
+                datos += [[nom,puntos]]
+    except:
+        pass # Caso de que no tenga nada el archivo
+    
+    tama_lista = len(datos)
+    for _ in range(tama_lista):
+        for i in range(tama_lista - 1):
+            if datos[i][1] < datos[i + 1][1]:
+                # Se dan vuelta entre los dos
+                temporal = datos[i]
+                datos[i] = datos[i + 1]
+                datos[i + 1] = temporal
+                
+    for i in range(min(10,len(datos))):
+        tk.Label(fram_p, text=str(i+1), font=("Courier New", 12, "bold"), 
+            bg="black", fg="white", width=13).grid(row=i+1, column=0)
+        tk.Label(fram_p, text=datos[i][0], font=("Courier New", 12, "bold"), 
+            bg="black", fg="white", width=15).grid(row=i+1, column=1)
+        tk.Label(fram_p, text=datos[i][1], font=("Courier New", 12, "bold"), 
+            bg="black", fg="white", width=10).grid(row=i+1, column=2)
+            
+ 
 #---------------------------------------------------------------------------------#
 #                             Funciones del Juego                                 #
 #---------------------------------------------------------------------------------#
@@ -324,13 +359,20 @@ def obtener_tex():
         return
     
     Ibl_usuario.configure(text=f"Jugador: {nombre}")
+    global nombre_jugador
     
-    # Cierra la ventana si el nombre es válido
+    nombre_jugador = nombre
     ventana_informacion.destroy()
     time.sleep(0.5)
     tm.showinfo("Información","Si deseas agregar obstaculos has click en las casillas")
     return nombre
-     
+
+def actualizar_estadisticas():
+    lbl_puntaje.config(text=f"Puntos: {puntaje_actual}")
+    lbl_lineas.config(text=f"Lineas: {lineas_totales}")
+    lbl_piezas.config(text=f"Piezas: {piezas_colocadas}")
+
+
 juego_en_proceso = False
 
 '''
@@ -631,6 +673,10 @@ def eliminar_lineas(tablero):
     
     return lineas_eliminadas
 
+def guardar_puntaje():
+    with open("Proyecto Tetris/Ranking.txt", "a") as archivo:
+        archivo.write(f"{nombre_jugador},{puntaje_actual}\n")
+
 #############################################
 #                  Juego 
 #############################################
@@ -639,7 +685,7 @@ E:
 S: Bucle del juego
 '''
 def iniciar():
-    global juego_en_proceso, pieza_actual, tablero
+    global juego_en_proceso, pieza_actual, tablero, puntaje_actual, lineas_totales, piezas_colocadas
     juego_en_proceso = True
 
     tablero = extraerMatriz() # Variable que contiene la matriz actualizada
@@ -673,20 +719,33 @@ def iniciar():
     ''' 
     def abajo(e):
         mover(pieza_actual,0,1,tablero)
-        
+    
+    
+    puntaje_actual = 0
+    lineas_totales = 0
+    piezas_colocadas = 0
+    
     '''
     E: 
-    S: 
+    S: Bucle del juego para hasta que se pierda 
     '''         
     def bucle_del_juego():
-        global pieza_actual, juego_en_proceso
+        global pieza_actual, juego_en_proceso, puntaje_actual, lineas_totales, piezas_colocadas
         
         if not mover(pieza_actual, 0, 1, tablero):
             fijar_pieza(pieza_actual, tablero)
             lineas = eliminar_lineas(tablero)
+
+            puntaje_actual += lineas * 100
+            lineas_totales += lineas
+            piezas_colocadas += 1
+            actualizar_estadisticas()
+            
             pieza_actual = crear_pieza()
             
-            if colision(pieza_actual, tablero):
+            if colision(pieza_actual, tablero): # Se pregunta si coliciona al aparecer
+                guardar_puntaje()
+
                 tm.showinfo("Game Over","Has perdido, inténtalo de nuevo")
                 juego_en_proceso = False
                 

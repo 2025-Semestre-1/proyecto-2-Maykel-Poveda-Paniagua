@@ -368,10 +368,10 @@ def obtener_tex():
     return nombre
 
 def actualizar_estadisticas():
-    lbl_puntaje.config(text=f"Puntos: {puntaje_actual}")
-    lbl_lineas.config(text=f"Lineas: {lineas_totales}")
-    lbl_piezas.config(text=f"Piezas: {piezas_colocadas}")
-
+    if juego_en_proceso:
+        lbl_puntaje.config(text=f"Puntos: {puntaje_actual}")
+        lbl_lineas.config(text=f"Lineas: {lineas_totales}")
+        lbl_piezas.config(text=f"Piezas: {piezas_colocadas}")
 
 juego_en_proceso = False
 
@@ -427,7 +427,7 @@ def dibujar_tablero(tablero):
                 color = "black"
                 
             else:
-                color = celda                    
+                color = celda   # Color de las piezas                 
             canvas_juego.create_rectangle(x * TAMANO_CELDA, y * TAMANO_CELDA,
                                             (x + 1) * TAMANO_CELDA,
                                             (y + 1) * TAMANO_CELDA,
@@ -438,8 +438,7 @@ S: Extrae la matriz del archivo txt
 '''
 def extraerMatriz():
     with open("Proyecto Tetris/Matriz.txt", "r") as archi:
-        contenido = archi.read()
-        lineas = contenido.splitlines()
+        lineas = archi.readlines()
         matriz = []
             
         for linea in lineas:
@@ -649,28 +648,37 @@ S: Elimina lineas con un mismo valor
 def eliminar_lineas(tablero):
     lineas_eliminadas = 0
 
-    for y in range(ALTURA-2, 0, -1):
-        linea_completa = True
-
-        for x in range(1, ANCHO-1): 
-            if tablero[y][x] == "0":
-                linea_completa = False
-                break 
+    # Recorre desde abajo hacia arriba
+    for y in range(ALTURA - 2, 0, -1):
+        es_completa = True
         
-        if linea_completa:
-            for x in range(1, ANCHO-1):
+        for x in range(1, ANCHO - 1):
+            if tablero[y][x] == "0" or tablero[y][x] == "#":
+                es_completa = False
+                break
+
+        if es_completa:
+            # Elimina la línea
+            for x in range(1, ANCHO - 1):
                 tablero[y][x] = "0"
 
-            for y_mover in range(y, 1, -1):
-                for x_mover in range(1, ANCHO-1):
-                    tablero[y_mover][x_mover] = tablero[y_mover-1][x_mover]
+            for fila in range(y, 1, -1):  # desde y hasta la fila 2
+                
+                for col in range(1, ANCHO - 1):
+        
+                    if tablero[fila][col] != "#" and tablero[fila - 1][col] != "#":
+                        tablero[fila][col] = tablero[fila - 1][col]
+                    elif tablero[fila - 1][col] == "#":
+                        tablero[fila][col] = "0"  # Si lo de arriba era obstaculo no se copia
 
-            for x in range(1, ANCHO-1):
-                tablero[1][x] = "0"
-            
+            # Limpia la fila 1
+            for x in range(1, ANCHO - 1):
+                if tablero[1][x] != "#":
+                    tablero[1][x] = "0"
+
             lineas_eliminadas += 1
-            y += 1
-    
+            y += 1  # Vuelve a verificar la misma fila
+
     return lineas_eliminadas
 
 def guardar_puntaje():
@@ -687,6 +695,14 @@ S: Bucle del juego
 def iniciar():
     global juego_en_proceso, pieza_actual, tablero, puntaje_actual, lineas_totales, piezas_colocadas
     juego_en_proceso = True
+    
+    lbl_puntaje.config(text=f"Puntos: 0")
+    lbl_lineas.config(text=f"Lineas: 0")
+    lbl_piezas.config(text=f"Piezas: 0")
+    
+    puntaje_actual = 0
+    lineas_totales = 0
+    piezas_colocadas = 0
 
     tablero = extraerMatriz() # Variable que contiene la matriz actualizada
     pieza_actual = crear_pieza() # Variable que tiene la pieza base
@@ -719,11 +735,6 @@ def iniciar():
     ''' 
     def abajo(e):
         mover(pieza_actual,0,1,tablero)
-    
-    
-    puntaje_actual = 0
-    lineas_totales = 0
-    piezas_colocadas = 0
     
     '''
     E: 

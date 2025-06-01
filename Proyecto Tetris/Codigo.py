@@ -663,13 +663,12 @@ def eliminar_lineas(tablero):
                 tablero[y][x] = "0"
 
             for fila in range(y, 1, -1):  # desde y hasta la fila 2
-                
                 for col in range(1, ANCHO - 1):
-        
-                    if tablero[fila][col] != "#" and tablero[fila - 1][col] != "#":
+                    # Si la celda de arriba es obstáculo, NO la copiamos
+                    if tablero[fila - 1][col] == "#":
+                        continue  # dejamos la celda como está
+                    elif tablero[fila][col] != "#":
                         tablero[fila][col] = tablero[fila - 1][col]
-                    elif tablero[fila - 1][col] == "#":
-                        tablero[fila][col] = "0"  # Si lo de arriba era obstaculo no se copia
 
             # Limpia la fila 1
             for x in range(1, ANCHO - 1):

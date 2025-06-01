@@ -1,14 +1,5 @@
 Maykel,500
 Jordan,100
 pepe,1100
-df,400
-df,0
-df,100
-dd,0
-dd,0
-dwd,0
-efe,0
-sqsq,0
-sqsq,0
-wws,0
-wws,0
+e,0
+s,400

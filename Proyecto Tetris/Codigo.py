@@ -236,7 +236,7 @@ FORMAS_TETRIS = [
 '''
 E: 
 S: Genera la ventana al tocar el boton de ranking
-R: 
+R: La genrea solo si no esta el juego en progreso
 '''
 def ventana_ranking():
     if not juego_en_proceso:
@@ -367,6 +367,10 @@ def obtener_tex():
     tm.showinfo("Información","Si deseas agregar obstaculos has click en las casillas")
     return nombre
 
+'''
+E: Puntaje, Lineas totales, Piezas colocadas
+S: Actualiza las etiquetas 
+'''
 def actualizar_estadisticas():
     if juego_en_proceso:
         lbl_puntaje.config(text=f"Puntos: {puntaje_actual}")
@@ -679,7 +683,10 @@ def eliminar_lineas(tablero):
             y += 1  # Vuelve a verificar la misma fila
 
     return lineas_eliminadas
-
+'''
+E: Nombre del jugador y puntaje
+S: Guarda los puntajes en un archivo txt
+'''
 def guardar_puntaje():
     with open("Proyecto Tetris/Ranking.txt", "a") as archivo:
         archivo.write(f"{nombre_jugador},{puntaje_actual}\n")

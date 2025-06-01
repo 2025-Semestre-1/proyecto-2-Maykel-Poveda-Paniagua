@@ -239,100 +239,100 @@ S: Genera la ventana al tocar el boton de ranking
 R: 
 '''
 def ventana_ranking():
-
-    # Ventana que muestra el Ranking
-    Ven_ranking = tk.Toplevel(principal,bg="khaki3") 
-    Ven_ranking.title("Ranking")
-    Ven_ranking.geometry("500x500+440+100")
-    Ven_ranking.resizable(False,False)
-    Ven_ranking.grab_set()
-    Ven_ranking.focus_set()
-    Ven_ranking.transient(principal)
-    
-    try:
-        Ven_ranking.iconbitmap("Proyecto Tetris/ra.ico")
-    except:
-        pass
-    
-    # Imagen 
-    imagen_fondo_Ranking = Image.open("Proyecto Tetris/fondo1.png")  # Ruta imagen
-    imagen_fondo_Ranking = imagen_fondo_Ranking.resize((550, 500), Image.Resampling.LANCZOS)
-    canvas_rank = ImageTk.PhotoImage(imagen_fondo_Ranking)
-    
-    frame_para_ran = tk.LabelFrame(Ven_ranking,bd=15,bg="khaki3")
-    frame_para_ran.configure(width=550, height=550)
-    frame_para_ran.pack()
-    frame_para_ran.pack_propagate(False)
-    
-    canvas_ran = tk.Canvas(frame_para_ran, width=550, height=550,highlightthickness=0)
-    canvas_ran.pack_propagate(False)
-    canvas_ran.pack()
-    
-    canvas_ran.create_image(0, 0, anchor="nw", image=canvas_rank) # Esquina superior izquierda
-    canvas_ran.image = canvas_rank  # Para que no se elimine la imagen
-    
-    # Frame de texto
-    frame_ra_panta = tk.LabelFrame(canvas_ran,bg="gold",bd=10)
-    frame_ra_panta.pack(fill="both",padx=20, pady=10)
-    
-    fram_pan = tk.Frame(frame_ra_panta,bg="black",width=430,height=40)
-    fram_pan.pack_propagate(False)
-    fram_pan.pack()
-    
-    # Etiqueta de frame de texto
-    tk.Label(fram_pan, text="TOP 10 PUNTAJES", font=("Courier New", 16, "bold"), 
-             bg="black", fg="white").pack(pady=10)
-    
-    # Frame de todas las etiquetas
-    frame_Ranking = tk.LabelFrame(canvas_ran, bg="gold",bd=10,width=425,height=440)
-    frame_Ranking.pack_propagate(False)
-    frame_Ranking.pack(fill="both", padx=20, pady=5)
-    
-    fram_p = tk.Frame(frame_Ranking, bg="black")
-    fram_p.pack(fill="both", expand=True)
-    
-    # Etiquetas
-    tk.Label(fram_p, text="Posicion", font=("Courier New", 12, "bold"), 
-             bg="black", fg="white", width=13).grid(row=0, column=0)
-    tk.Label(fram_p, text="Jugador", font=("Courier New", 12, "bold"), 
-             bg="black", fg="white", width=15).grid(row=0, column=1)
-    tk.Label(fram_p, text="Puntos", font=("Courier New", 12, "bold"), 
-             bg="black", fg="white", width=10).grid(row=0, column=2)
-    
-    try:
-        with open("Proyecto Tetris/Ranking.txt","r") as archi:
+    if not juego_en_proceso:
+        # Ventana que muestra el Ranking
+        Ven_ranking = tk.Toplevel(principal,bg="khaki3") 
+        Ven_ranking.title("Ranking")
+        Ven_ranking.geometry("500x500+440+100")
+        Ven_ranking.resizable(False,False)
+        Ven_ranking.grab_set()
+        Ven_ranking.focus_set()
+        Ven_ranking.transient(principal)
         
-            lineas = archi.readlines()
+        try:
+            Ven_ranking.iconbitmap("Proyecto Tetris/ra.ico")
+        except:
+            pass
         
-        datos = []
-        for linea in lineas:
-            partes = linea.strip().split(",")
+        # Imagen 
+        imagen_fondo_Ranking = Image.open("Proyecto Tetris/fondo1.png")  # Ruta imagen
+        imagen_fondo_Ranking = imagen_fondo_Ranking.resize((550, 500), Image.Resampling.LANCZOS)
+        canvas_rank = ImageTk.PhotoImage(imagen_fondo_Ranking)
+        
+        frame_para_ran = tk.LabelFrame(Ven_ranking,bd=15,bg="khaki3")
+        frame_para_ran.configure(width=550, height=550)
+        frame_para_ran.pack()
+        frame_para_ran.pack_propagate(False)
+        
+        canvas_ran = tk.Canvas(frame_para_ran, width=550, height=550,highlightthickness=0)
+        canvas_ran.pack_propagate(False)
+        canvas_ran.pack()
+        
+        canvas_ran.create_image(0, 0, anchor="nw", image=canvas_rank) # Esquina superior izquierda
+        canvas_ran.image = canvas_rank  # Para que no se elimine la imagen
+        
+        # Frame de texto
+        frame_ra_panta = tk.LabelFrame(canvas_ran,bg="gold",bd=10)
+        frame_ra_panta.pack(fill="both",padx=20, pady=10)
+        
+        fram_pan = tk.Frame(frame_ra_panta,bg="black",width=430,height=40)
+        fram_pan.pack_propagate(False)
+        fram_pan.pack()
+        
+        # Etiqueta de frame de texto
+        tk.Label(fram_pan, text="TOP 10 PUNTAJES", font=("Courier New", 16, "bold"), 
+                bg="black", fg="white").pack(pady=10)
+        
+        # Frame de todas las etiquetas
+        frame_Ranking = tk.LabelFrame(canvas_ran, bg="gold",bd=10,width=425,height=440)
+        frame_Ranking.pack_propagate(False)
+        frame_Ranking.pack(fill="both", padx=20, pady=5)
+        
+        fram_p = tk.Frame(frame_Ranking, bg="black")
+        fram_p.pack(fill="both", expand=True)
+        
+        # Etiquetas
+        tk.Label(fram_p, text="Posicion", font=("Courier New", 12, "bold"), 
+                bg="black", fg="white", width=13).grid(row=0, column=0)
+        tk.Label(fram_p, text="Jugador", font=("Courier New", 12, "bold"), 
+                bg="black", fg="white", width=15).grid(row=0, column=1)
+        tk.Label(fram_p, text="Puntos", font=("Courier New", 12, "bold"), 
+                bg="black", fg="white", width=10).grid(row=0, column=2)
+        
+        try:
+            with open("Proyecto Tetris/Ranking.txt","r") as archi:
             
-            if len(partes) == 2:
-                nom = partes[0]
-                puntos = int(partes[1])
-                
-                datos += [[nom,puntos]]
-    except:
-        pass # Caso de que no tenga nada el archivo
-    
-    tama_lista = len(datos)
-    for _ in range(tama_lista):
-        for i in range(tama_lista - 1):
-            if datos[i][1] < datos[i + 1][1]:
-                # Se dan vuelta entre los dos
-                temporal = datos[i]
-                datos[i] = datos[i + 1]
-                datos[i + 1] = temporal
-                
-    for i in range(min(10,len(datos))):
-        tk.Label(fram_p, text=str(i+1), font=("Courier New", 12, "bold"), 
-            bg="black", fg="white", width=13).grid(row=i+1, column=0)
-        tk.Label(fram_p, text=datos[i][0], font=("Courier New", 12, "bold"), 
-            bg="black", fg="white", width=15).grid(row=i+1, column=1)
-        tk.Label(fram_p, text=datos[i][1], font=("Courier New", 12, "bold"), 
-            bg="black", fg="white", width=10).grid(row=i+1, column=2)
+                lineas = archi.readlines()
             
+            datos = []
+            for linea in lineas:
+                partes = linea.strip().split(",")
+                
+                if len(partes) == 2:
+                    nom = partes[0]
+                    puntos = int(partes[1])
+                    
+                    datos += [[nom,puntos]]
+        except:
+            pass # Caso de que no tenga nada el archivo
+        
+        tama_lista = len(datos)
+        for _ in range(tama_lista):
+            for i in range(tama_lista - 1):
+                if datos[i][1] < datos[i + 1][1]:
+                    # Se dan vuelta entre los dos
+                    temporal = datos[i]
+                    datos[i] = datos[i + 1]
+                    datos[i + 1] = temporal
+                    
+        for i in range(min(10,len(datos))):
+            tk.Label(fram_p, text=str(i+1), font=("Courier New", 12, "bold"), 
+                bg="black", fg="white", width=13).grid(row=i+1, column=0)
+            tk.Label(fram_p, text=datos[i][0], font=("Courier New", 12, "bold"), 
+                bg="black", fg="white", width=15).grid(row=i+1, column=1)
+            tk.Label(fram_p, text=datos[i][1], font=("Courier New", 12, "bold"), 
+                bg="black", fg="white", width=10).grid(row=i+1, column=2)
+                
  
 #---------------------------------------------------------------------------------#
 #                             Funciones del Juego                                 #
@@ -658,15 +658,15 @@ def eliminar_lineas(tablero):
                 break
 
         if es_completa:
-            # Elimina la línea
+            # Elimina toda la linea
             for x in range(1, ANCHO - 1):
                 tablero[y][x] = "0"
 
             for fila in range(y, 1, -1):  # desde y hasta la fila 2
                 for col in range(1, ANCHO - 1):
-                    # Si la celda de arriba es obstáculo, NO la copiamos
+                    # Si la celda de arriba es un obstaculo no se copea
                     if tablero[fila - 1][col] == "#":
-                        continue  # dejamos la celda como está
+                        continue  # dejamos la celda igual
                     elif tablero[fila][col] != "#":
                         tablero[fila][col] = tablero[fila - 1][col]
 
